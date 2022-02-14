@@ -11,7 +11,7 @@ public class Player {
     int PlayerHeight;
     int PlayerWidth;
     long score;
-    Rectangle shape;
+    public Rectangle shape;
     boolean isJump = false;
 
     public Player(Texture texture, int positionX, int positionY, int playerHeight, int playerWidth){
@@ -91,6 +91,7 @@ public class Player {
 
     public void draw(SpriteBatch batch){
         batch.draw(this.texture, this.getPositionX(), this.getPositionY(),PlayerWidth ,PlayerHeight);
+        shape.set(this.getPositionX(), this.getPositionY(),PlayerWidth ,PlayerHeight);
         score++;
     }
 }
