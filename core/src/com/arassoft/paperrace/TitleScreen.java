@@ -46,8 +46,8 @@ public class TitleScreen implements Screen {
         clouds[4] = new Texture("Textures/Clouds/cumulus-small1.png");
         clouds[5] = new Texture("Textures/Clouds/cumulus-small2.png");
         clouds[6] = new Texture("Textures/Clouds/cumulus-small3.png");
-        cloudSpeed[0] = 50;
-        cloudSpeed[1] = 80;
+        cloudSpeed[0] = 90;
+        cloudSpeed[1] = 100;
         cloudSpeed[2] = 110;
         cloudSpeed[3] = 140;
         cloudSpeed[4] = 170;
@@ -56,7 +56,7 @@ public class TitleScreen implements Screen {
 
         for (int i = 0; i < cloudX.length; i++){
                 cloudY[i] = new Random().nextInt(Gdx.graphics.getHeight());
-                cloudSize[i] = new Random().nextInt(500);
+                cloudSize[i] = new Random().nextInt(10);
                 cloudX[i] = new Random().nextInt(Gdx.graphics.getWidth());
         }
         music.setLooping(true);
@@ -123,7 +123,6 @@ public class TitleScreen implements Screen {
                 cloudSize[i] = new Random().nextInt(7-3) + 3;
                 cloudX[i] = 0 - (clouds[i].getWidth() * cloudSize[i]);
                 cloudY[i] = new Random().nextInt(Gdx.graphics.getHeight() - clouds[i].getHeight());
-                cloudSpeed[i] = cloudSize[i];
             }
         }
 

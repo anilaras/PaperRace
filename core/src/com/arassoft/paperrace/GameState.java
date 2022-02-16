@@ -1,5 +1,5 @@
 package com.arassoft.paperrace;
 
 public enum GameState {
-    start,stop,gemeover
+    start,stop,gameover
 }

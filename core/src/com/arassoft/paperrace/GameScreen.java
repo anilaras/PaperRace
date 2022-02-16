@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 
+import java.util.Random;
+
 public class GameScreen implements Screen {
     PaperRace game;
 
@@ -134,6 +136,10 @@ public class GameScreen implements Screen {
             enemyY = Gdx.graphics.getHeight();
             for (int i = 0 ; i < 3 ; i++){
                 enemies[i].setPosition(i);
+                int rnd = new Random().nextInt(4);
+                enemies[i].setX(PositionStateHolder.possiblePositions[rnd]);
+                enemies[i].rectangle.setX(PositionStateHolder.possiblePositions[rnd]);
+
             }
         }
         for (int i = 0 ; i < 3 ; i++){
@@ -152,7 +158,7 @@ public class GameScreen implements Screen {
                     enemies[i].getWidth(),
                     enemies[i].getHeight());
             if (enemies[i].rectangle.overlaps(player.shape) && !player.isJump()){
-                state = GameState.gemeover;
+                state = GameState.gameover;
             }
         }
 
