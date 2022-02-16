@@ -35,6 +35,18 @@ public class Font {
             e.printStackTrace();
         }
     }
+    public void print(String message, int y){
+        try {
+            glyphLayout.setText(font, message);
+            font.draw(batch, glyphLayout, Gdx.graphics.getWidth()/2 - glyphLayout.width /2, y);
+
+            //font.draw(this.batch, message,Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void print(String message,int x, int y){
         try {
             font.draw(this.batch, message, x,y);
