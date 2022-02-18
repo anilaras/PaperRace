@@ -1,10 +1,13 @@
 package com.arassoft.paperrace;
 
+import com.arassoft.GameObjects.Font;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -20,6 +23,12 @@ import java.util.Random;
 public class TitleScreen implements Screen {
     PaperRace game;
     Skin skin;
+    BitmapFont font = new BitmapFont(Gdx.files.internal("Fonts/pixelFont.fnt"), Gdx.files.internal("Fonts/pixelFont.png"), false);
+    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixel.ttf"));
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    BitmapFont font12;
+    BitmapFont font32;
+
     private Stage stage;
     private SpriteBatch batch;
     Music music = Gdx.audio.newMusic(Gdx.files.internal("Sounds/TitleScreenMusic.ogg"));
@@ -53,6 +62,10 @@ public class TitleScreen implements Screen {
         cloudSpeed[4] = 170;
         cloudSpeed[5] = 180;
         cloudSpeed[6] = 210;
+        parameter.size = 12;
+        font12 = generator.generateFont(parameter);
+        parameter.size = 32;
+        font32 = generator.generateFont(parameter);
 
         for (int i = 0; i < cloudX.length; i++){
                 cloudY[i] = new Random().nextInt(Gdx.graphics.getHeight());
@@ -63,18 +76,21 @@ public class TitleScreen implements Screen {
         music.setPosition(4f);
         music.play();
         final Label label = new Label("Paper Race", skin, "title");
-        label.setHeight(Gdx.graphics.getHeight()/8);
-        label.setWidth(Gdx.graphics.getWidth()/4);
-        label.setPosition(Gdx.graphics.getWidth() /2 - ((Gdx.graphics.getWidth() /4) / 2), Gdx.graphics.getHeight() - ((Gdx.graphics.getHeight()/4)));
-        label.setFontScale(2);
+        label.setHeight(Gdx.graphics.getHeight()/4);
+        label.setWidth(Gdx.graphics.getWidth()/2);
+        label.setPosition(Gdx.graphics.getWidth() /2 - ((Gdx.graphics.getWidth() /2) / 2), Gdx.graphics.getHeight() - ((Gdx.graphics.getHeight()/3)));
+        label.setFontScale(4);
         label.setScale(2);
+        Label.LabelStyle labelStyle = label.getStyle();
+        labelStyle.font = font32;
+        label.setStyle(labelStyle);
         label.setAlignment(Align.center);
 
         final TextButton startGameButton = new TextButton("Start Game", skin, "round");
         startGameButton.setWidth(Gdx.graphics.getWidth() /4);
         startGameButton.setHeight(Gdx.graphics.getHeight()/8);
         startGameButton.getLabel().setFontScale(2);
-        startGameButton.getStyle().downFontColor = Color.GREEN;
+        TextButton.TextButtonStyle startButtonStyle = startGameButton.getStyle();
         startGameButton.setPosition(Gdx.graphics.getWidth() /2 - ((Gdx.graphics.getWidth() /4) / 2), Gdx.graphics.getHeight()/2 - ((Gdx.graphics.getHeight()/8) /2));
         startGameButton.addListener(new ClickListener(){
             @Override
@@ -104,7 +120,8 @@ public class TitleScreen implements Screen {
         Pixmap bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
         bgPixmap.setColor(255-78, 255-179, 255-254,1);
         bgPixmap.fill();
-        bg = new Texture(bgPixmap);
+//        bg = new Texture(bgPixmap);
+        bg = new Texture("Textures/bg_menu.png");
 
         stage.addActor(startGameButton);
         stage.addActor(muteButton);
@@ -158,6 +175,8 @@ public class TitleScreen implements Screen {
 
     @Override
     public void dispose() {
+        music.stop();
         music.dispose();
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
     }
 }
