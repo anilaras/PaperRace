@@ -1,5 +1,6 @@
 package com.arassoft.GameObjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -13,6 +14,17 @@ public class Player {
     long score;
     public Rectangle shape;
     boolean isJump = false;
+    Road road;
+
+    public int getJumpStateY() {
+        return jumpStateY;
+    }
+
+    public void setJumpStateY(int jumpStateY) {
+        this.jumpStateY = jumpStateY;
+    }
+
+    int jumpStateY;
 
     public Player(Texture texture, int positionX, int positionY, int playerHeight, int playerWidth){
         this.texture = texture;
@@ -25,7 +37,7 @@ public class Player {
     }
 
 
-    public Player(Texture texture,int position, int playerHeight, int playerWidth){
+    public Player(Texture texture,int position, int playerHeight, int playerWidth, Road road){
         this.texture = texture;
         updatePosition(position);
         setPlayerHeight(playerHeight);
@@ -33,6 +45,7 @@ public class Player {
         this.positionY = 10;
         shape = new Rectangle();
         this.shape.set(positionX,positionY,PlayerWidth,PlayerHeight);
+        this.road = road;
     }
 
     public Texture getTexture(){
@@ -89,9 +102,23 @@ public class Player {
         return score;
     }
 
+    public void update(){
+        if (this.isJump())
+            jumpStateY -= road.getRoadSpeed() *  Gdx.graphics.getDeltaTime();
+
+        if (jumpStateY < 0 && this.isJump()) {
+            this.setPlayerHeight(Gdx.graphics.getHeight() / 7);
+            this.setPlayerWidth(Gdx.graphics.getWidth() / 16);
+            this.setPositionX(this.getPositionX() + Gdx.graphics.getWidth() / 60);
+            this.setJump(false);
+            jumpStateY = 0;
+        }
+
+        score++;
+    }
+
     public void draw(SpriteBatch batch){
         batch.draw(this.texture, this.getPositionX(), this.getPositionY(),PlayerWidth ,PlayerHeight);
         shape.set(this.getPositionX(), this.getPositionY(),PlayerWidth ,PlayerHeight);
-        score++;
     }
 }

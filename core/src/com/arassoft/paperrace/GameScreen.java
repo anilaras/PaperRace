@@ -43,13 +43,13 @@ public class GameScreen implements Screen {
 
         shapeRenderer = new ShapeRenderer();
         background = new Texture("bg.png");
-        player = new Player(new Texture("car-player.png"),2, Gdx.graphics.getHeight()/7,Gdx.graphics.getWidth()/16);
         enemies = new Enemy[4];
         for (int i = 0; i < 3 ; i++){
             enemies[i] = new Enemy(PositionStateHolder.possiblePositions[i],Gdx.graphics.getHeight(),new Texture("car-enemy2.png"),Gdx.graphics.getHeight()/7,Gdx.graphics.getWidth()/16 );
         }
         enemyY = Gdx.graphics.getHeight();
         road = new Road("road.png",4,200);
+        player = new Player(new Texture("car-player.png"),2, Gdx.graphics.getHeight()/7,Gdx.graphics.getWidth()/16,road);
         trees = new Tree("tree.png");
         state = GameState.stop;
         font = new Font(batch);
@@ -97,22 +97,14 @@ public class GameScreen implements Screen {
 
             @Override
             public void onUp() {
-                if (player.isJump() == false){
-                    player.setPlayerHeight((int)(Gdx.graphics.getHeight()/7 * 1.5));
-                    player.setPlayerWidth((int) (Gdx.graphics.getWidth()/16 * 1.5));
-                    player.setPositionX(player.getPositionX() - Gdx.graphics.getWidth()/60);
+                if (player.isJump() == false) {
+                    player.setPlayerHeight((int) (Gdx.graphics.getHeight() / 7 * 1.5));
+                    player.setPlayerWidth((int) (Gdx.graphics.getWidth() / 16 * 1.5));
+                    player.setPositionX(player.getPositionX() - Gdx.graphics.getWidth() / 60);
                     player.setJump(true);
-                    Timer.schedule(new Timer.Task(){
-                        @Override
-                        public void run() {
-                            player.setPlayerHeight(Gdx.graphics.getHeight()/7);
-                            player.setPlayerWidth(Gdx.graphics.getWidth()/16);
-                            player.setPositionX(player.getPositionX() + Gdx.graphics.getWidth()/60);
-                            player.setJump(false);
-                        }
-                    }, 2);
-                }
 
+                    player.setJumpStateY((int) (enemies[0].rectangle.height * 4));
+                }
             }
 
             @Override
@@ -127,25 +119,29 @@ public class GameScreen implements Screen {
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        enemyY  -= road.getRoadSpeed() *  Gdx.graphics.getDeltaTime();
+        if (state != GameState.gameover){
+            enemyY  -= road.getRoadSpeed() *  Gdx.graphics.getDeltaTime();
 
-        road.update(Gdx.graphics.getDeltaTime());
-        trees.update(road);
+            road.update(Gdx.graphics.getDeltaTime());
+            trees.update(road);
+            player.update();
 
-        if (enemyY < -200) {
-            enemyY = Gdx.graphics.getHeight();
+            if (enemyY < -200) {
+                enemyY = Gdx.graphics.getHeight();
+                for (int i = 0 ; i < 3 ; i++){
+                    enemies[i].setPosition(i);
+                    int rnd = new Random().nextInt(4);
+                    enemies[i].setX(PositionStateHolder.possiblePositions[rnd]);
+                    enemies[i].rectangle.setX(PositionStateHolder.possiblePositions[rnd]);
+
+                }
+            }
             for (int i = 0 ; i < 3 ; i++){
-                enemies[i].setPosition(i);
-                int rnd = new Random().nextInt(4);
-                enemies[i].setX(PositionStateHolder.possiblePositions[rnd]);
-                enemies[i].rectangle.setX(PositionStateHolder.possiblePositions[rnd]);
-
+                enemies[i].setY(enemyY);
+                enemies[i].rectangle.setY(enemyY);
             }
         }
-        for (int i = 0 ; i < 3 ; i++){
-            enemies[i].setY(enemyY);
-            enemies[i].rectangle.setY(enemyY);
-        }
+
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         road.draw(batch);
@@ -167,7 +163,7 @@ public class GameScreen implements Screen {
 
         if (DebugHelper.DEBUG)
             //font.print("Debug  : " + enemies[0].rectangle.overlaps(player.shape) + enemies[1].rectangle.overlaps(player.shape) + enemies[2].rectangle.overlaps(player.shape));
-            font.print("Debug  : " + state.name());
+            font.print("Debug  : " + state.name() + " EnemyY : " + enemyY + " JumpStateY : " + player.getJumpStateY());
 
         font.print("Score",Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 4), Gdx.graphics.getHeight() - 50);
         font.print(String.valueOf(player.getScore()),Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 4), Gdx.graphics.getHeight() - 120);
