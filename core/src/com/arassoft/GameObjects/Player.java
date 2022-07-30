@@ -102,6 +102,10 @@ public class Player {
         return score;
     }
 
+    public void setScore(long score){
+        this.score = score;
+    }
+
     public void update(){
         if (this.isJump())
             jumpStateY -= road.getRoadSpeed() *  Gdx.graphics.getDeltaTime();

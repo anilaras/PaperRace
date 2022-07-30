@@ -1,15 +1,24 @@
 package com.arassoft.paperrace;
 
 import com.arassoft.GameObjects.*;
+import com.arassoft.GameObjects.Tree;
 import com.arassoft.Helper.DebugHelper;
 import com.arassoft.extenders.SimpleDirectionGestureDetector;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 
@@ -17,16 +26,24 @@ import java.util.Random;
 
 public class GameScreen implements Screen {
     PaperRace game;
-
     public GameScreen(PaperRace game){
         this.game = game;
     }
+
+
+    Skin skin;
+    private Stage stage;
+
     SpriteBatch batch;
     Texture background;
     Texture [] tree = new Texture[4];
     ShapeRenderer shapeRenderer;
     boolean DEBUG = true;
     GameState state;
+
+    Label gameOverLabel;
+    TextButton replayButton;
+    TextButton exitButton;
 
     Player player;
     Road road;
@@ -39,6 +56,16 @@ public class GameScreen implements Screen {
     @Override
     public void show () {
         batch = new SpriteBatch();
+
+        skin = new Skin(Gdx.files.internal("UI/skin/uiskin.json"));
+
+        gameOverLabel = new Label("GAME OVER\nDouble Click to play again!",skin,"title");
+        gameOverLabel.setFontScale(3);
+        gameOverLabel.setAlignment(Align.center);
+        gameOverLabel.setPosition(Gdx.graphics.getWidth() /4, Gdx.graphics.getHeight()/3);
+        gameOverLabel.setWidth(Gdx.graphics.getWidth() /2);
+        gameOverLabel.setHeight(Gdx.graphics.getHeight()/4);
+
 
 
         shapeRenderer = new ShapeRenderer();
@@ -53,6 +80,7 @@ public class GameScreen implements Screen {
         trees = new Tree("tree.png");
         state = GameState.stop;
         font = new Font(batch);
+
         Gdx.input.setInputProcessor(new SimpleDirectionGestureDetector(new SimpleDirectionGestureDetector.DirectionListener() {
             @Override
             public void onDoubleTap() {
@@ -70,11 +98,14 @@ public class GameScreen implements Screen {
 //					}
 //				}, 2);
                 state = GameState.start;
+                enemyY = Gdx.graphics.getHeight();
+                player.setScore(0);
+                road.setRoadSpeed(200);
             }
 
             @Override
             public void onLeft() {
-                if (!player.isJump()){
+                if (!player.isJump() && state != GameState.gameover){
                     PositionStateHolder.position--;
                     if (PositionStateHolder.position <= 0){
                         PositionStateHolder.position = 0;
@@ -86,7 +117,7 @@ public class GameScreen implements Screen {
 
             @Override
             public void onRight() {
-                if (!player.isJump()){
+                if (!player.isJump() && state != GameState.gameover){
                     PositionStateHolder.position++;
                     if (PositionStateHolder.position >= 3){
                         PositionStateHolder.position = 3;
@@ -97,7 +128,7 @@ public class GameScreen implements Screen {
 
             @Override
             public void onUp() {
-                if (player.isJump() == false) {
+                if (player.isJump() == false && state != GameState.gameover) {
                     player.setPlayerHeight((int) (Gdx.graphics.getHeight() / 7 * 1.5));
                     player.setPlayerWidth((int) (Gdx.graphics.getWidth() / 16 * 1.5));
                     player.setPositionX(player.getPositionX() - Gdx.graphics.getWidth() / 60);
@@ -160,6 +191,9 @@ public class GameScreen implements Screen {
 
         player.draw(batch);
 
+        if (state == GameState.gameover){
+            gameOverLabel.draw(batch,1);
+        }
 
         if (DebugHelper.DEBUG)
             //font.print("Debug  : " + enemies[0].rectangle.overlaps(player.shape) + enemies[1].rectangle.overlaps(player.shape) + enemies[2].rectangle.overlaps(player.shape));
@@ -168,7 +202,6 @@ public class GameScreen implements Screen {
         font.print("Score",Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 4), Gdx.graphics.getHeight() - 50);
         font.print(String.valueOf(player.getScore()),Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 4), Gdx.graphics.getHeight() - 120);
         batch.end();
-
 
         if (DebugHelper.DEBUG){
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);

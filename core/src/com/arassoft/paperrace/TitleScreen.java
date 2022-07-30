@@ -75,6 +75,7 @@ public class TitleScreen implements Screen {
         music.setLooping(true);
         music.setPosition(4f);
         music.play();
+
         final Label label = new Label("Paper Race", skin, "title");
         label.setHeight(Gdx.graphics.getHeight()/4);
         label.setWidth(Gdx.graphics.getWidth()/2);
